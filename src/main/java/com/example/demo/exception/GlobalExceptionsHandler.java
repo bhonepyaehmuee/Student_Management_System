@@ -20,15 +20,15 @@ public class GlobalExceptionsHandler {
     public static class ResourceNotFoundException extends RuntimeException {
         public ResourceNotFoundException(String message) {
 
-        super(message);
-        }
-    }
-
-    public static class DuplicateResourceException extends RuntimeException {
-        public DuplicateResourceException(String message) {
             super(message);
         }
     }
+
+//    public static class DuplicateResourceException extends RuntimeException {
+//        public DuplicateResourceException(String message) {
+//            super(message);
+//        }
+//    }
 
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<?> handleDuplicate(DuplicateResourceException ex) {

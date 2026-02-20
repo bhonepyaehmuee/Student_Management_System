@@ -5,7 +5,7 @@ import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.CourseResponseDTO;
 import com.example.demo.enums.CourseStatus;
 import com.example.demo.exception.DuplicateResourceException;
-import com.example.demo.exception.GlobalExceptionsHandler;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.CourseMapper;
 import com.example.demo.model.Course;
 import com.example.demo.repository.CourseRepo;
@@ -79,7 +79,7 @@ public class CourseServiceImpl implements CourseService {
     public ApiResponse<CourseResponseDTO> updateCourseInfo(Long id, CourseRequestDTO courseRequestDTO) {
         Course existedCourse = courseRepo.findById(id)
                 .orElseThrow(() ->
-                        new GlobalExceptionsHandler.ResourceNotFoundException("Can't found course using this id"));
+                        new ResourceNotFoundException("Can't found course using this id"));
         if (courseRequestDTO.getCourseCode() != null &&
                 !courseRequestDTO.getCourseCode().equals(existedCourse.getCourseCode()) &&
                 courseRepo.existsByCourseCode(courseRequestDTO.getCourseCode())) {
@@ -110,7 +110,7 @@ public class CourseServiceImpl implements CourseService {
     public ApiResponse<CourseResponseDTO> changeStatusById(Long id,CourseStatus targetStatus) {
      Course course = courseRepo.findById(id)
                 .orElseThrow(()->
-                        new GlobalExceptionsHandler.ResourceNotFoundException("Course is not found by that id "+ id));
+                        new ResourceNotFoundException("Course is not found by that id "+ id));
         if(course.getStatus() != null && course.getStatus() == targetStatus) {
             return ApiResponse.<CourseResponseDTO>builder()
                     .success(false)

@@ -23,5 +23,4 @@ public class CourseRequestDTO
     private String description;
 
 
-
 }

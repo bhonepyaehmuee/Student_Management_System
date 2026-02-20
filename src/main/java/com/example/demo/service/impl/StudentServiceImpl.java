@@ -4,7 +4,8 @@ import com.example.demo.dto.request.StudentRequestDTO;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.StudentResponseDTO;
 import com.example.demo.enums.StudentStatus;
-import com.example.demo.exception.GlobalExceptionsHandler;
+import com.example.demo.exception.DuplicateResourceException;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.StudentMapper;
 import com.example.demo.model.Role;
 import com.example.demo.model.Student;
@@ -43,11 +44,11 @@ public class StudentServiceImpl implements StudentService
     {
 
         if (studentRepo.existsByEmail(requestDTO.getEmail())) {
-            throw new GlobalExceptionsHandler.DuplicateResourceException("\n Email is already used!");
+            throw new DuplicateResourceException("\n Email is already used!");
         }
 
         if (studentRepo.existsByStudentRegNumber(requestDTO.getStudentRegNumber())) {
-            throw new GlobalExceptionsHandler.DuplicateResourceException("\n Student number already exists!");
+            throw new DuplicateResourceException("\n Student number already exists!");
         }
         /*
         1.RequestDTO --> Entity
@@ -63,7 +64,7 @@ public class StudentServiceImpl implements StudentService
 ////           Long roleList = roleRepo.findById(requestDTO.getRoleIds());
 //           if(roles.size() != requestDTO.getRoleIds().size())
 //           {
-//            throw new GlobalExceptionsHandler.ResourceNotFoundException("Roles cannot found!!!");
+//            throw new ResourceNotFoundException("Roles cannot found!!!");
 //           }
 //           student.setRoles(roles);
 
@@ -114,7 +115,7 @@ public class StudentServiceImpl implements StudentService
     @Override
     public ApiResponse<StudentResponseDTO> changeStudentStatus(Long id) {
         Student student = studentRepo.findById(id)
-                .orElseThrow(()-> new GlobalExceptionsHandler.ResourceNotFoundException("Can't find the id"));
+                .orElseThrow(()-> new ResourceNotFoundException("Can't find the id"));
     student.setStatus(StudentStatus.INACTIVE);
     student.onUpdate();
     StudentResponseDTO studentResponseDTO =StudentMapper.mapToDTO(studentRepo.save(student));
@@ -125,7 +126,7 @@ public class StudentServiceImpl implements StudentService
     public ApiResponse<StudentResponseDTO> updateStudentById(Long studentId, StudentRequestDTO studentRequestDTO)
     {
        Student student =   studentRepo.findById(studentId)
-               .orElseThrow(() -> new GlobalExceptionsHandler.ResourceNotFoundException("Student is not found with this id!! --->" +studentId));
+               .orElseThrow(() -> new ResourceNotFoundException("Student is not found with this id!! --->" +studentId));
         log.info("\n here we can find the Student by ID: {} ", student.getEmail());
 
         if(studentRequestDTO.getEmail() !=null &&
@@ -133,7 +134,7 @@ public class StudentServiceImpl implements StudentService
                 && studentRepo.existsByEmail(studentRequestDTO.getEmail()))
         {
             log.info("\n here is the email id={},email={}",student.getId(),studentRequestDTO.getEmail());
-           throw  new GlobalExceptionsHandler.DuplicateResourceException("Email is already existed!!");
+           throw  new DuplicateResourceException("Email is already existed!!");
         }
 
         if(studentRequestDTO.getEmail() !=null)
@@ -169,7 +170,7 @@ public class StudentServiceImpl implements StudentService
             && !studentRequestDTO.getStudentRegNumber().equals(student.getStudentRegNumber())
                 && studentRepo.existsByStudentRegNumber(studentRequestDTO.getStudentRegNumber()))
         {
-            throw new GlobalExceptionsHandler.DuplicateResourceException("Student Registration Number is already Existed!!");
+            throw new DuplicateResourceException("Student Registration Number is already Existed!!");
         }
         if(studentRequestDTO.getStudentRegNumber() != null )
         {

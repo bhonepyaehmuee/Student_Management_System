@@ -1,6 +1,5 @@
 package com.example.demo.dto.request;
 
-import com.example.demo.enums.EnrollmentStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

@@ -6,7 +6,9 @@ import com.example.demo.dto.request.InstructorStatusRequestDTO;
 import com.example.demo.dto.response.ApiResponse;
 import com.example.demo.dto.response.InstructorResponseDTO;
 import com.example.demo.enums.InstructorStatus;
+import com.example.demo.exception.DuplicateResourceException;
 import com.example.demo.exception.GlobalExceptionsHandler;
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.mapper.InstructorMapper;
 import com.example.demo.model.Instructor;
 import com.example.demo.model.Role;
@@ -40,17 +42,17 @@ public class InstructorServiceImpl implements InstructorService {
     public ApiResponse<InstructorResponseDTO> createInstructor(InstructorRequestDTO instructorRequestDTO) {
 
         if (instructorRepo.existsByInstructorCode(instructorRequestDTO.getInstructorCode())) {
-            throw new GlobalExceptionsHandler.DuplicateResourceException(
+            throw new DuplicateResourceException(
                     "Instructor Code is already have in the system!"
             );
         }
         if (instructorRepo.existsByUsername(instructorRequestDTO.getUsername())) {
-            throw new GlobalExceptionsHandler.DuplicateResourceException("Username already exists");
+            throw new DuplicateResourceException("Username already exists");
         }
         if (instructorRepo.existsByEmail(instructorRequestDTO.getEmail())) {
             log.warn("Attempt to update instructor with existing email: {}",instructorRequestDTO.getEmail());
 
-            throw new GlobalExceptionsHandler.DuplicateResourceException(
+            throw new DuplicateResourceException(
                     "Email is already used!"
             );
 
@@ -107,7 +109,7 @@ public class InstructorServiceImpl implements InstructorService {
     public ApiResponse<InstructorResponseDTO> updateInstructorInfo(Long id, InstructorRequestDTO instructorRequestDTO)
     {
         Instructor existedInstructor = instructorRepo.findById(id)
-                .orElseThrow(() -> new GlobalExceptionsHandler.ResourceNotFoundException("Instructor is not found with this id!! --->" +id));
+                .orElseThrow(() -> new ResourceNotFoundException("Instructor is not found with this id!! --->" +id));
         if(instructorRequestDTO.getEmail() != null &&
         !instructorRequestDTO.getEmail().equals(existedInstructor.getEmail())
            && instructorRepo.existsByEmail(instructorRequestDTO.getEmail()))
@@ -115,7 +117,7 @@ public class InstructorServiceImpl implements InstructorService {
             log.warn("Attempt to update instructor {} with existing email: {}", id, instructorRequestDTO.getEmail());
 
             log.debug("Here is the email ");
-            throw  new GlobalExceptionsHandler.DuplicateResourceException("Email is already exited!!");
+            throw  new DuplicateResourceException("Email is already exited!!");
         }
         if(instructorRequestDTO.getName() != null)
         {
@@ -163,7 +165,7 @@ public class InstructorServiceImpl implements InstructorService {
     public ApiResponse<InstructorResponseDTO> changeInstructorStatus(Long id, InstructorStatus newStatus) {
 
         Instructor existedInstructor = instructorRepo.findById(id)
-                .orElseThrow(() -> new GlobalExceptionsHandler.ResourceNotFoundException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Instructor not found with id: " + id
                 ));
 

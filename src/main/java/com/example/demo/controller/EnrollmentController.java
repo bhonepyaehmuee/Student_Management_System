@@ -51,5 +51,6 @@ public class EnrollmentController {
     {
         return  ResponseEntity.ok().body(enrollmentService.updateEnrollmentsById(id,enrollmentRequestDTO));
     }
-
+    @Operation(summary = "Change Status Enrollments")
+    @PatchMapping('/')
 }
